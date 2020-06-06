@@ -1,9 +1,9 @@
 package db
 
 var (
-	mgoDB *db.Mdb
+	mgoDB *Mdb
 )
 
-func GetDb() *db.Mdb {
+func GetDb() *Mdb {
 	return mgoDB
 }

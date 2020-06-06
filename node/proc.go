@@ -1,4 +1,4 @@
-package cronsun
+package main
 
 import (
 	"encoding/json"

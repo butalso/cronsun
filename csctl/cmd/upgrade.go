@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/etcd"
 	"strings"
 
 	"github.com/coreos/etcd/clientv3"
@@ -48,13 +49,13 @@ var UpgradeCmd = &cobra.Command{
 	},
 }
 
-func getIPMapper(ea *ExitAction, prever string) map[string]*cronsun.Node {
-	nodes, err := cronsun.GetNodes()
+func getIPMapper(ea *ExitAction, prever string) map[string]*etcd.Node {
+	nodes, err := etcd.GetNodes()
 	if err != nil {
 		ea.Exit("failed to fetch nodes from MongoDB: %s", err.Error())
 	}
 
-	var ipMapper = make(map[string]*cronsun.Node, len(nodes))
+	var ipMapper = make(map[string]*etcd.Node, len(nodes))
 	for _, n := range nodes {
 		n.IP = strings.TrimSpace(n.IP)
 		if n.IP == "" || n.ID == "" {
@@ -71,7 +72,7 @@ func getIPMapper(ea *ExitAction, prever string) map[string]*cronsun.Node {
 }
 
 // to_0_3_0 can be run many times
-func to_0_3_0(ea *ExitAction, nodesById map[string]*cronsun.Node) (shouldStop bool) {
+func to_0_3_0(ea *ExitAction, nodesById map[string]*etcd.Node) (shouldStop bool) {
 	var replaceIDs = func(list []string) {
 		for i := range list {
 			if node, ok := nodesById[list[i]]; ok {
@@ -87,7 +88,7 @@ func to_0_3_0(ea *ExitAction, nodesById map[string]*cronsun.Node) (shouldStop bo
 	total := len(gresp.Kvs)
 	upgraded := 0
 	for i := range gresp.Kvs {
-		job := cronsun.Job{}
+		job := etcd.Job{}
 		err = json.Unmarshal(gresp.Kvs[i].Value, &job)
 		if err != nil {
 			fmt.Printf("[Error] failed to decode job(%s) data: %s\n", string(gresp.Kvs[i].Key), err.Error())
@@ -118,7 +119,7 @@ func to_0_3_0(ea *ExitAction, nodesById map[string]*cronsun.Node) (shouldStop bo
 	fmt.Printf("%d of %d jobs has been upgraded.\n", upgraded, total)
 
 	// migrate node group data
-	nodeGroups, err := cronsun.GetNodeGroups()
+	nodeGroups, err := etcd.GetNodeGroups()
 	if err != nil {
 		ea.Exit("[Error] failed to get node group datas: ", err.Error())
 	}
@@ -168,7 +169,7 @@ func to_0_3_0(ea *ExitAction, nodesById map[string]*cronsun.Node) (shouldStop bo
 }
 
 // to_0_3_0 can be run many times
-func to_0_3_1(ea *ExitAction, nodesById map[string]*cronsun.Node) (shouldStop bool) {
+func to_0_3_1(ea *ExitAction, nodesById map[string]*etcd.Node) (shouldStop bool) {
 	// upgrade logs
 	var err error
 	cronsun.GetDb().WithC(cronsun.Coll_JobLog, func(c *mgo.Collection) error {

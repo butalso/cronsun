@@ -1,4 +1,4 @@
-package cronsun
+package main
 
 import (
 	client "github.com/coreos/etcd/clientv3"

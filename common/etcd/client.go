@@ -2,18 +2,19 @@ package etcd
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/shunfei/cronsun"
 	"strings"
 	"time"
 
 	client "github.com/coreos/etcd/clientv3"
 
-	"github.com/shunfei/cronsun/conf"
+	"github.com/butalso/cronsun/common/conf"
 )
 
 var (
 	DefalutClient *Client
+	ErrValueMayChanged = errors.New("The value has been changed by others on this time.")
 )
 
 type Client struct {
@@ -58,7 +59,7 @@ func (c *Client) PutWithModRev(key, val string, rev int64) (*client.PutResponse,
 	}
 
 	if !tresp.Succeeded {
-		return nil, cronsun.ErrValueMayChanged
+		return nil, ErrValueMayChanged
 	}
 
 	resp := client.PutResponse(*tresp.Responses[0].GetResponsePut())

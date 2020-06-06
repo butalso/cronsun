@@ -1,10 +1,10 @@
-package cronsun
+package etcd
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/shunfei/cronsun/common/etcd"
-	"github.com/shunfei/cronsun/db"
+	"github.com/butalso/cronsun/common/db"
+	"gopkg.in/mgo.v2"
 	"os"
 	"strconv"
 	"syscall"
@@ -13,8 +13,8 @@ import (
 	client "github.com/coreos/etcd/clientv3"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
 )
 
 const (
@@ -27,8 +27,8 @@ type Node struct {
 	ID       string `bson:"_id" json:"id"`  // machine id
 	PID      string `bson:"pid" json:"pid"` // 进程 pid
 	PIDFile  string `bson:"-" json:"-"`
-	IP       string `bson:"ip" json:"ip"` // node ip
-	Hostname string `bson:"hostname" json:"hostname"`
+	IP       string `bson:"Ip" json:"Ip"` // node Ip
+	Hostname string `bson:"Hostname" json:"Hostname"`
 
 	Version  string    `bson:"version" json:"version"`
 	UpTime   time.Time `bson:"up" json:"up"`     // 启动时间
@@ -43,17 +43,17 @@ func (n *Node) String() string {
 }
 
 func (n *Node) Put(opts ...client.OpOption) (*client.PutResponse, error) {
-	return etcd.DefalutClient.Put(conf.Config.Node+n.ID, n.PID, opts...)
+	return DefalutClient.Put(conf.Config.Node+n.ID, n.PID, opts...)
 }
 
 func (n *Node) Del() (*client.DeleteResponse, error) {
-	return etcd.DefalutClient.Delete(conf.Config.Node + n.ID)
+	return DefalutClient.Delete(conf.Config.Node + n.ID)
 }
 
 // 判断 node 是否已注册到 etcd
 // 存在则返回进行 pid，不存在返回 -1
 func (n *Node) Exist() (pid int, err error) {
-	resp, err := etcd.DefalutClient.Get(conf.Config.Node + n.ID)
+	resp, err := DefalutClient.Get(conf.Config.Node + n.ID)
 	if err != nil {
 		return
 	}
@@ -63,7 +63,7 @@ func (n *Node) Exist() (pid int, err error) {
 	}
 
 	if pid, err = strconv.Atoi(string(resp.Kvs[0].Value)); err != nil {
-		if _, err = etcd.DefalutClient.Delete(conf.Config.Node + n.ID); err != nil {
+		if _, err = DefalutClient.Delete(conf.Config.Node + n.ID); err != nil {
 			return
 		}
 		return -1, nil
@@ -87,7 +87,7 @@ func GetNodes() (nodes []*Node, err error) {
 }
 
 func GetNodesBy(query interface{}) (nodes []*Node, err error) {
-	err = db.mgoDB.WithC(Coll_Node, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
 		return c.Find(query).All(&nodes)
 	})
 
@@ -95,19 +95,19 @@ func GetNodesBy(query interface{}) (nodes []*Node, err error) {
 }
 
 func GetNodesByID(id string) (node *Node, err error) {
-	err = db.mgoDB.FindId(Coll_Node, id, &node)
+	err = db.GetDb().FindId(Coll_Node, id, &node)
 	return
 }
 
 func RemoveNode(query interface{}) error {
-	return db.mgoDB.WithC(Coll_Node, func(c *mgo.Collection) error {
+	return db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
 		return c.Remove(query)
 	})
 }
 
 func ISNodeAlive(id string) (bool, error) {
 	n := 0
-	err := db.mgoDB.WithC(Coll_Node, func(c *mgo.Collection) error {
+	err := db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
 		var e error
 		n, e = c.Find(bson.M{"_id": id, "alived": true}).Count()
 		return e
@@ -117,7 +117,7 @@ func ISNodeAlive(id string) (bool, error) {
 }
 
 func GetNodeGroups() (list []*Group, err error) {
-	resp, err := etcd.DefalutClient.Get(conf.Config.Group, client.WithPrefix(), client.WithSort(client.SortByKey, client.SortAscend))
+	resp, err := DefalutClient.Get(conf.Config.Group, client.WithPrefix(), client.WithSort(client.SortByKey, client.SortAscend))
 	if err != nil {
 		return
 	}
@@ -137,7 +137,7 @@ func GetNodeGroups() (list []*Group, err error) {
 }
 
 func WatchNode() client.WatchChan {
-	return etcd.DefalutClient.Watch(conf.Config.Node, client.WithPrefix())
+	return DefalutClient.Watch(conf.Config.Node, client.WithPrefix())
 }
 
 // On 结点实例启动后，在 mongoDB 中记录存活信息
@@ -153,7 +153,7 @@ func (n *Node) Down() {
 }
 
 func (n *Node) SyncToMgo() {
-	if err := db.mgoDB.Upsert(Coll_Node, bson.M{"_id": n.ID}, n); err != nil {
+	if err := db.GetDb().Upsert(Coll_Node, bson.M{"_id": n.ID}, n); err != nil {
 		log.Errorf(err.Error())
 	}
 }
@@ -161,5 +161,5 @@ func (n *Node) SyncToMgo() {
 // RmOldInfo remove old version(< 0.3.0) node info
 func (n *Node) RmOldInfo() {
 	RemoveNode(bson.M{"_id": n.IP})
-	etcd.DefalutClient.Delete(conf.Config.Node + n.IP)
+	DefalutClient.Delete(conf.Config.Node + n.IP)
 }

@@ -1,4 +1,4 @@
-package etcd
+package main
 
 import (
 	"bytes"
@@ -7,8 +7,9 @@ import (
 	"errors"
 	"fmt"
 	error2 "github.com/butalso/cronsun/common/error"
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/common/db"
+	etcd2 "github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/web/dal/mgo"
+	"github.com/butalso/cronsun/web/noticer"
 	"github.com/shunfei/cronsun/common/etcd"
 	"github.com/shunfei/cronsun/common/genid"
 	"os/exec"
@@ -27,6 +28,8 @@ import (
 	"github.com/shunfei/cronsun/node/cron"
 	"github.com/shunfei/cronsun/utils"
 )
+
+type Jobs map[string]*Job
 
 const (
 	DefaultJobGroup = "default"
@@ -278,7 +281,7 @@ func (c *Cmd) lock() *locker {
 }
 
 // 优先取结点里的值，更新 group 时可用 gid 判断是否对 job 进行处理
-func (rule *JobRule) included(nid string, gs map[string]*Group) bool {
+func (rule *JobRule) included(nid string, gs map[string]*etcd2.Group) bool {
 	for i, count := 0, len(rule.NodeIDs); i < count; i++ {
 		if nid == rule.NodeIDs[i] {
 			return true
@@ -440,7 +443,7 @@ func (j *Job) GetNextRunTime() time.Time {
 func (j *Job) Run() bool {
 	var (
 		cmd         *exec.Cmd
-		proc        *cronsun.Process
+		proc        *Process
 		sysProcAttr *syscall.SysProcAttr
 		err         error
 	)
@@ -471,12 +474,12 @@ func (j *Job) Run() bool {
 		return false
 	}
 
-	proc = &cronsun.Process{
-		ID:     strconv.Itoa(cmd.Process.Pid),
-		JobID:  j.ID,
-		Group:  j.Group,
-		NodeID: j.RunOn,
-		ProcessVal: cronsun.ProcessVal{
+	proc = &Process{
+		ID:          strconv.Itoa(cmd.Process.Pid),
+		JobID:       j.ID,
+		etcd2.Group: j.Group,
+		NodeID:      j.RunOn,
+		ProcessVal: ProcessVal{
 			Time: t,
 		},
 	}
@@ -565,12 +568,12 @@ func (j *Job) Check() error {
 
 // 执行结果写入 mongoDB
 func (j *Job) Success(t time.Time, out string) {
-	db.CreateJobLog(j, t, out, true)
+	mgo.CreateJobLog(j, t, out, true)
 }
 
 func (j *Job) Fail(t time.Time, msg string) {
 	j.Notify(t, msg)
-	db.CreateJobLog(j, t, msg, false)
+	mgo.CreateJobLog(j, t, msg, false)
 }
 
 func (j *Job) Notify(t time.Time, msg string) {
@@ -586,7 +589,7 @@ func (j *Job) Notify(t time.Time, msg string) {
 		"Time: " + ts + "\n" +
 		"Error: " + msg
 
-	m := cronsun.Message{
+	m := noticer.Message{
 		Subject: "[Cronsun] node[" + j.Hostname + "|" + j.Ip + "] job[" + j.ShortName() + "] time[" + ts + "] exec failed",
 		Body:    body,
 		To:      j.To,
@@ -615,7 +618,7 @@ func (j *Job) Avg(t, et time.Time) {
 	j.AvgTime = (j.AvgTime + execTime) / 2
 }
 
-func (j *Job) Cmds(nid string, gs map[string]*Group) (cmds map[string]*Cmd) {
+func (j *Job) Cmds(nid string, gs map[string]*etcd2.Group) (cmds map[string]*Cmd) {
 	cmds = make(map[string]*Cmd)
 	if j.Pause {
 		return
@@ -646,7 +649,7 @@ LOOP_TIMER_CMD:
 	return
 }
 
-func (j Job) IsRunOn(nid string, gs map[string]*Group) bool {
+func (j Job) IsRunOn(nid string, gs map[string]*etcd2.Group) bool {
 LOOP_TIMER:
 	for _, r := range j.Rules {
 		for _, id := range r.ExcludeNodeIDs {

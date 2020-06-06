@@ -9,7 +9,8 @@ import (
 var generator *fastuuid.Generator
 
 func init()  {
-	generator, err := fastuuid.NewGenerator()
+	var err error
+	generator, err = fastuuid.NewGenerator()
 	if err != nil {
 		panic(err)
 	}

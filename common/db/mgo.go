@@ -1,22 +1,22 @@
 package db
 
 import (
+	"github.com/butalso/cronsun/common/conf"
+	"gopkg.in/mgo.v2"
 	"net/url"
 	"strings"
-	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
 
-
 type Mdb struct {
-	*Config
+	*conf.MgoConfig
 	*mgo.Session
 }
 
-func NewMdb(c *Config) (*Mdb, error) {
+func NewMdb(c *conf.MgoConfig) (*Mdb, error) {
 	m := &Mdb{
-		Config: c,
+		MgoConfig: c,
 	}
 	return m, m.connect()
 }
@@ -24,20 +24,20 @@ func NewMdb(c *Config) (*Mdb, error) {
 func (m *Mdb) connect() error {
 	// connectionString: [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
 	// via: https://docs.mongodb.com/manual/reference/connection-string/
-	connectionString := strings.Join(m.Config.Hosts, ",")
-	if len(m.Config.UserName) > 0 && len(m.Config.Password) > 0 {
-		connectionString = m.Config.UserName + ":" + url.QueryEscape(m.Config.Password) + "@" + connectionString
+	connectionString := strings.Join(m.MgoConfig.Hosts, ",")
+	if len(m.MgoConfig.UserName) > 0 && len(m.MgoConfig.Password) > 0 {
+		connectionString = m.MgoConfig.UserName + ":" + url.QueryEscape(m.MgoConfig.Password) + "@" + connectionString
 	}
 
-	if len(m.Config.Database) > 0 {
-		connectionString += "/" + m.Config.Database
+	if len(m.MgoConfig.Database) > 0 {
+		connectionString += "/" + m.MgoConfig.Database
 	}
 
-	if len(m.Config.AuthSource) > 0 {
-		connectionString += "?authSource=" + m.Config.AuthSource
+	if len(m.MgoConfig.AuthSource) > 0 {
+		connectionString += "?authSource=" + m.MgoConfig.AuthSource
 	}
 
-	session, err := mgo.DialWithTimeout(connectionString, m.Config.Timeout)
+	session, err := mgo.DialWithTimeout(connectionString, m.MgoConfig.Timeout)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (m *Mdb) connect() error {
 
 func (m *Mdb) WithC(collection string, job func(*mgo.Collection) error) error {
 	s := m.Session.New()
-	err := job(s.DB(m.Config.Database).C(collection))
+	err := job(s.DB(m.MgoConfig.Database).C(collection))
 	s.Close()
 	return err
 }
