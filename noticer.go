@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/shunfei/cronsun/common/etcd"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -147,7 +148,7 @@ func StartNoticer(n Noticer) {
 	go n.Serve()
 	go monitorNodes(n)
 
-	rch := DefalutClient.Watch(conf.Config.Noticer, client.WithPrefix())
+	rch := etcd.DefalutClient.Watch(conf.Config.Noticer, client.WithPrefix())
 	var err error
 	for wresp := range rch {
 		for _, ev := range wresp.Events {

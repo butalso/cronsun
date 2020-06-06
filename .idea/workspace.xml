@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:fix" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="887d1e3d-3f4d-4b00-9aea-d76e05191456" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/cronsun.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/conf/conf_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/conf/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/db/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/etcd/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/event/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/genid/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/log/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/utils/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/account.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/account.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/csctl/cmd.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/csctl/cmd/backup.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd/backup.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/csctl/cmd/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/csctl/cmd/restore.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd/restore.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/csctl/cmd/upgrade.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd/upgrade.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/node/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/web/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/etcd/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/conf.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/conf.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/base.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/base.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/db.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/db.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/etcd.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/etcd.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/mail.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/mail.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/security.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/security.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/files/web.json.sample" beforeDir="false" afterPath="$PROJECT_DIR$/common/conf/files/web.json.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csctl.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/csctl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/mgo.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/mgo.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/mid/auto_inc.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/mid/auto_inc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event/event.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/event/event.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/event/event_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/event/event_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/group.go" beforeDir="false" afterPath="$PROJECT_DIR$/group.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/id.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/genid/id.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/job.go" beforeDir="false" afterPath="$PROJECT_DIR$/job.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/job_log.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/job_log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/log/log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mdb.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/mdb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/csctl.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/csctl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/group.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/group.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/job.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/job.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/noticer.go" beforeDir="false" afterPath="$PROJECT_DIR$/noticer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/once.go" beforeDir="false" afterPath="$PROJECT_DIR$/once.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proc.go" beforeDir="false" afterPath="$PROJECT_DIR$/proc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/argument_parser.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/argument_parser.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/argument_parser_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/argument_parser_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/confutil.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/confutil.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/confutil_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/confutil_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/local_ip.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/local_ip.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/string.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/string.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/test.json" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/test.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/test1.json" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils/test1.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/version.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="$PROJECT_DIR$/../../../../../../env/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="1cn0HhzIOUuCkZGGm0eUR7aaRHN" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Module.GOPATH.is.expanded" value="false" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="go.vgo" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\code\go\src\github.com\shunfei\cronsun\common" />
+      <recent name="E:\code\go\src\github.com\shunfei\cronsun\common\genid" />
+      <recent name="E:\code\go\src\github.com\shunfei\cronsun" />
+      <recent name="E:\code\go\src\github.com\shunfei\cronsun\conf" />
+      <recent name="E:\code\go\src\github.com\shunfei\cronsun\web" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Test.TestInit in github.com/shunfei/cronsun/common/conf">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="cronsun" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/" />
+      <package value="github.com/shunfei/cronsun" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestInit in github.com/butalso/cronsun/common/conf" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="cronsun" />
+      <working_directory value="$PROJECT_DIR$/common/conf" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/butalso/cronsun/common/conf" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestInit$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestInit in github.com/shunfei/cronsun/common/conf" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="cronsun" />
+      <working_directory value="$PROJECT_DIR$/common/conf" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/shunfei/cronsun/common/conf" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestInit$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="cronsun" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/shunfei/cronsun" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestInit in github.com/shunfei/cronsun/common/conf" />
+        <item itemvalue="Go Test.TestInit in github.com/butalso/cronsun/common/conf" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="752" y="-610" key="#GOROOT" timestamp="1591149049732">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="752" y="-610" key="#GOROOT/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149049732" />
+    <state x="752" y="-707" key="#Go_Modules" timestamp="1591149087287">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="752" y="-707" key="#Go_Modules/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149087287" />
+    <state x="656" y="-937" key="#TestInit_in_github.com/butalso/cronsun/common/conf" timestamp="1591234727860">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="656" y="-937" key="#TestInit_in_github.com/butalso/cronsun/common/conf/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591234727860" />
+    <state x="847" y="-681" key="EnvironmentVariablesDialog" timestamp="1591149085807">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="847" y="-681" key="EnvironmentVariablesDialog/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149085807" />
+    <state x="740" y="-785" key="FileChooserDialogImpl" timestamp="1591149372177">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="740" y="-785" key="FileChooserDialogImpl/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149372177" />
+    <state width="1877" height="295" key="GridCell.Tab.0.bottom" timestamp="1591235466333">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="295" key="GridCell.Tab.0.bottom/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235466333" />
+    <state width="1877" height="295" key="GridCell.Tab.0.center" timestamp="1591235466333">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="295" key="GridCell.Tab.0.center/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235466333" />
+    <state width="1877" height="295" key="GridCell.Tab.0.left" timestamp="1591235466333">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="295" key="GridCell.Tab.0.left/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235466333" />
+    <state width="1877" height="295" key="GridCell.Tab.0.right" timestamp="1591235466333">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="295" key="GridCell.Tab.0.right/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235466333" />
+    <state x="461" y="-896" key="SettingsEditor" timestamp="1591149149558">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="461" y="-896" key="SettingsEditor/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149149558" />
+    <state x="552" y="-807" key="Vcs.Push.Dialog.v2" timestamp="1591235686461">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="552" y="-807" key="Vcs.Push.Dialog.v2/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235686461" />
+    <state x="623" y="-845" key="search.everywhere.popup" timestamp="1591233023434">
+      <screen x="0" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="623" y="-845" key="search.everywhere.popup/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591233023434" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/common/db/account.go</url>
+          <line>2</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/node/node.go</url>
+          <line>2</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

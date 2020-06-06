@@ -1,4 +1,4 @@
-package node
+package main
 
 import (
 	"encoding/json"
@@ -11,12 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/butalso/cronsun"
+	"github.com/butalso/cronsun/conf"
+	"github.com/butalso/cronsun/log"
+	"github.com/butalso/cronsun/node/cron"
+	"github.com/butalso/cronsun/utils"
 	client "github.com/coreos/etcd/clientv3"
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
-	"github.com/shunfei/cronsun/node/cron"
-	"github.com/shunfei/cronsun/utils"
 )
 
 // Node 执行 cron 命令服务的结构体

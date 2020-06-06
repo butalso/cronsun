@@ -1,10 +1,10 @@
-package node
+package main
 
 import (
 	"encoding/json"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun"
+	"github.com/butalso/cronsun/log"
 )
 
 func (n *Node) executCsctlCmd(key, value []byte) error {

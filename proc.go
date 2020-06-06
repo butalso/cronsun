@@ -3,6 +3,7 @@ package cronsun
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/shunfei/cronsun/common/etcd"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -79,7 +80,7 @@ func (l *leaseID) get() client.LeaseID {
 
 func (l *leaseID) set() error {
 	id := client.LeaseID(-1)
-	resp, err := DefalutClient.Grant(l.ttl + 2)
+	resp, err := etcd.DefalutClient.Grant(l.ttl + 2)
 	if err == nil {
 		id = resp.ID
 	}
@@ -104,7 +105,7 @@ func (l *leaseID) keepAlive() {
 
 			id := l.get()
 			if id > 0 {
-				_, err := DefalutClient.KeepAliveOnce(l.ID)
+				_, err := etcd.DefalutClient.KeepAliveOnce(l.ID)
 				if err == nil {
 					timer.Reset(duration)
 					continue
@@ -179,7 +180,7 @@ func (p *Process) Val() (string, error) {
 
 // 获取节点正在执行任务的数量
 func (j *Job) CountRunning() (int64, error) {
-	resp, err := DefalutClient.Get(conf.Config.Proc+j.runOn+"/"+j.Group+"/"+j.ID, client.WithPrefix(), client.WithCountOnly())
+	resp, err := etcd.DefalutClient.Get(conf.Config.Proc+j.runOn+"/"+j.Group+"/"+j.ID, client.WithPrefix(), client.WithCountOnly())
 	if err != nil {
 		return 0, err
 	}
@@ -205,12 +206,12 @@ func (p *Process) put() (err error) {
 		return err
 	}
 	if id < 0 {
-		if _, err = DefalutClient.Put(p.Key(), val); err != nil {
+		if _, err = etcd.DefalutClient.Put(p.Key(), val); err != nil {
 			return
 		}
 	}
 
-	_, err = DefalutClient.Put(p.Key(), val, client.WithLease(id))
+	_, err = etcd.DefalutClient.Put(p.Key(), val, client.WithLease(id))
 	return
 }
 
@@ -219,7 +220,7 @@ func (p *Process) del() error {
 		return nil
 	}
 
-	_, err := DefalutClient.Delete(p.Key())
+	_, err := etcd.DefalutClient.Delete(p.Key())
 	return err
 }
 
@@ -273,5 +274,5 @@ func (p *Process) Stop() {
 }
 
 func WatchProcs(nid string) client.WatchChan {
-	return DefalutClient.Watch(conf.Config.Proc+nid, client.WithPrefix())
+	return etcd.DefalutClient.Watch(conf.Config.Proc+nid, client.WithPrefix())
 }

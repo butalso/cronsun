@@ -3,6 +3,7 @@ package cronsun
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/shunfei/cronsun/common/etcd"
 	"strings"
 
 	client "github.com/coreos/etcd/clientv3"
@@ -24,7 +25,7 @@ func GetGroupById(gid string) (g *Group, err error) {
 	if len(gid) == 0 {
 		return
 	}
-	resp, err := DefalutClient.Get(conf.Config.Group + gid)
+	resp, err := etcd.DefalutClient.Get(conf.Config.Group + gid)
 	if err != nil || resp.Count == 0 {
 		return
 	}
@@ -36,7 +37,7 @@ func GetGroupById(gid string) (g *Group, err error) {
 // GetGroups 获取包含 nid 的 group
 // 如果 nid 为空，则获取所有的 group
 func GetGroups(nid string) (groups map[string]*Group, err error) {
-	resp, err := DefalutClient.Get(conf.Config.Group, client.WithPrefix())
+	resp, err := etcd.DefalutClient.Get(conf.Config.Group, client.WithPrefix())
 	if err != nil {
 		return
 	}
@@ -61,7 +62,7 @@ func GetGroups(nid string) (groups map[string]*Group, err error) {
 }
 
 func WatchGroups() client.WatchChan {
-	return DefalutClient.Watch(conf.Config.Group, client.WithPrefix(), client.WithPrevKV())
+	return etcd.DefalutClient.Watch(conf.Config.Group, client.WithPrefix(), client.WithPrevKV())
 }
 
 func GetGroupFromKv(key, value []byte) (g *Group, err error) {
@@ -73,7 +74,7 @@ func GetGroupFromKv(key, value []byte) (g *Group, err error) {
 }
 
 func DeleteGroupById(id string) (*client.DeleteResponse, error) {
-	return DefalutClient.Delete(GroupKey(id))
+	return etcd.DefalutClient.Delete(GroupKey(id))
 }
 
 func GroupKey(id string) string {
@@ -90,12 +91,12 @@ func (g *Group) Put(modRev int64) (*client.PutResponse, error) {
 		return nil, err
 	}
 
-	return DefalutClient.PutWithModRev(g.Key(), string(b), modRev)
+	return etcd.DefalutClient.PutWithModRev(g.Key(), string(b), modRev)
 }
 
 func (g *Group) Check() error {
 	g.ID = strings.TrimSpace(g.ID)
-	if !IsValidAsKeyPath(g.ID) {
+	if !etcd.IsValidAsKeyPath(g.ID) {
 		return ErrIllegalNodeGroupId
 	}
 

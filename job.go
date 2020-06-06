@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/shunfei/cronsun/common/db"
+	"github.com/shunfei/cronsun/common/etcd"
+	"github.com/shunfei/cronsun/common/genid"
 	"os/exec"
 	"os/user"
 	"runtime"
@@ -104,7 +107,7 @@ func (l *locker) keepAlive() {
 		case <-l.done:
 			return
 		case <-l.timer.C:
-			_, err := DefalutClient.KeepAliveOnce(l.lID)
+			_, err := etcd.DefalutClient.KeepAliveOnce(l.lID)
 			if err != nil {
 				log.Warnf("lock keep alive err: %s", err.Error())
 				return
@@ -121,7 +124,7 @@ func (l *locker) unlock() {
 
 	close(l.done)
 	l.timer.Stop()
-	if _, err := DefalutClient.Revoke(l.lID); err != nil {
+	if _, err := etcd.DefalutClient.Revoke(l.lID); err != nil {
 		log.Warnf("unlock revoke err: %s", err.Error())
 	}
 }
@@ -249,13 +252,13 @@ func (c *Cmd) lock() *locker {
 		return nil
 	}
 
-	resp, err := DefalutClient.Grant(lk.ttl)
+	resp, err := etcd.DefalutClient.Grant(lk.ttl)
 	if err != nil {
 		log.Infof("job[%s] didn't get a lock, err: %s", c.Job.Key(), err.Error())
 		return nil
 	}
 
-	ok, err := DefalutClient.GetLock(c.Job.ID, resp.ID)
+	ok, err := etcd.DefalutClient.GetLock(c.Job.ID, resp.ID)
 	if err != nil {
 		log.Infof("job[%s] didn't get a lock, err: %s", c.Job.Key(), err.Error())
 		return nil
@@ -316,7 +319,7 @@ func GetJob(group, id string) (job *Job, err error) {
 }
 
 func GetJobAndRev(group, id string) (job *Job, rev int64, err error) {
-	resp, err := DefalutClient.Get(JobKey(group, id))
+	resp, err := etcd.DefalutClient.Get(JobKey(group, id))
 	if err != nil {
 		return
 	}
@@ -336,11 +339,11 @@ func GetJobAndRev(group, id string) (job *Job, rev int64, err error) {
 }
 
 func DeleteJob(group, id string) (resp *client.DeleteResponse, err error) {
-	return DefalutClient.Delete(JobKey(group, id))
+	return etcd.DefalutClient.Delete(JobKey(group, id))
 }
 
 func GetJobs() (jobs map[string]*Job, err error) {
-	resp, err := DefalutClient.Get(conf.Config.Cmd, client.WithPrefix())
+	resp, err := etcd.DefalutClient.Get(conf.Config.Cmd, client.WithPrefix())
 	if err != nil {
 		return
 	}
@@ -370,7 +373,7 @@ func GetJobs() (jobs map[string]*Job, err error) {
 }
 
 func WatchJobs() client.WatchChan {
-	return DefalutClient.Watch(conf.Config.Cmd, client.WithPrefix())
+	return etcd.DefalutClient.Watch(conf.Config.Cmd, client.WithPrefix())
 }
 
 func GetJobFromKv(key, value []byte) (job *Job, err error) {
@@ -519,7 +522,7 @@ func (j *Job) Key() string {
 
 func (j *Job) Check() error {
 	j.ID = strings.TrimSpace(j.ID)
-	if !IsValidAsKeyPath(j.ID) {
+	if !etcd.IsValidAsKeyPath(j.ID) {
 		return ErrIllegalJobId
 	}
 
@@ -533,7 +536,7 @@ func (j *Job) Check() error {
 		j.Group = DefaultJobGroup
 	}
 
-	if !IsValidAsKeyPath(j.Group) {
+	if !etcd.IsValidAsKeyPath(j.Group) {
 		return ErrIllegalJobGroupName
 	}
 
@@ -546,7 +549,7 @@ func (j *Job) Check() error {
 	for i := range j.Rules {
 		id := strings.TrimSpace(j.Rules[i].ID)
 		if id == "" || strings.HasPrefix(id, "NEW") {
-			j.Rules[i].ID = NextID()
+			j.Rules[i].ID = genid.NextID()
 		}
 	}
 
@@ -560,12 +563,12 @@ func (j *Job) Check() error {
 
 // 执行结果写入 mongoDB
 func (j *Job) Success(t time.Time, out string) {
-	CreateJobLog(j, t, out, true)
+	db.CreateJobLog(j, t, out, true)
 }
 
 func (j *Job) Fail(t time.Time, msg string) {
 	j.Notify(t, msg)
-	CreateJobLog(j, t, msg, false)
+	db.CreateJobLog(j, t, msg, false)
 }
 
 func (j *Job) Notify(t time.Time, msg string) {
@@ -593,7 +596,7 @@ func (j *Job) Notify(t time.Time, msg string) {
 		return
 	}
 
-	_, err = DefalutClient.Put(conf.Config.Noticer+"/"+j.runOn, string(data))
+	_, err = etcd.DefalutClient.Put(conf.Config.Noticer+"/"+j.runOn, string(data))
 	if err != nil {
 		log.Warnf("job[%s] send notice fail, err: %s", j.Key(), err.Error())
 		return
@@ -750,7 +753,7 @@ func (j *Job) CreateCmdAttr() (*syscall.SysProcAttr, error) {
 		return nil, errors.New("not support run with user on windows")
 	}
 
-	if uid != _Uid {
+	if uid != conf._Uid {
 		gid, _ := strconv.Atoi(u.Gid)
 		sysProcAttr.Credential = &syscall.Credential{
 			Uid: uint32(uid),
