@@ -2,7 +2,6 @@ package mgo
 
 import (
 	"github.com/butalso/cronsun/common/db"
-	"github.com/butalso/cronsun/etcd/node"
 	"gopkg.in/mgo.v2"
 	"time"
 
@@ -42,14 +41,14 @@ type JobLatestLog struct {
 }
 
 func GetJobLogById(id bson.ObjectId) (l *JobLog, err error) {
-	err = db.mgoDB.FindId(Coll_JobLog, id, &l)
+	err = db.GetDb().FindId(Coll_JobLog, id, &l)
 	return
 }
 
 var selectForJobLogList = bson.M{"command": 0, "output": 0}
 
 func GetJobLogList(query bson.M, page, size int, sort string) (list []*JobLog, total int, err error) {
-	err = db.mgoDB.WithC(Coll_JobLog, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_JobLog, func(c *mgo.Collection) error {
 		total, err = c.Find(query).Count()
 		if err != nil {
 			return err
@@ -60,7 +59,7 @@ func GetJobLogList(query bson.M, page, size int, sort string) (list []*JobLog, t
 }
 
 func GetJobLatestLogList(query bson.M, page, size int, sort string) (list []*JobLatestLog, total int, err error) {
-	err = db.mgoDB.WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
 		total, err = c.Find(query).Count()
 		if err != nil {
 			return err
@@ -73,7 +72,7 @@ func GetJobLatestLogList(query bson.M, page, size int, sort string) (list []*Job
 func GetJobLatestLogListByJobIds(jobIds []string) (m map[string]*JobLatestLog, err error) {
 	var list []*JobLatestLog
 
-	err = db.mgoDB.WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
 		return c.Find(bson.M{"jobId": bson.M{"$in": jobIds}}).Select(selectForJobLogList).Sort("beginTime").All(&list)
 	})
 	if err != nil {
@@ -121,7 +120,7 @@ func CreateJobLog(j *node.Job, t time.Time, rs string, success bool) {
 		jl.Cleanup = jl.EndTime.Add(time.Duration(expiration) * time.Hour * 24)
 	}
 
-	if err := db.mgoDB.Insert(Coll_JobLog, jl); err != nil {
+	if err := db.GetDb().Insert(Coll_JobLog, jl); err != nil {
 		log.Errorf(err.Error())
 	}
 
@@ -130,7 +129,7 @@ func CreateJobLog(j *node.Job, t time.Time, rs string, success bool) {
 		JobLog:   jl,
 	}
 	latestLog.Id = ""
-	if err := db.mgoDB.Upsert(Coll_JobLatestLog, bson.M{"node": jl.Node, "hostname": jl.Hostname, "ip": jl.IP, "jobId": jl.JobId, "jobGroup": jl.JobGroup}, latestLog); err != nil {
+	if err := db.GetDb().Upsert(Coll_JobLatestLog, bson.M{"node": jl.Node, "hostname": jl.Hostname, "ip": jl.IP, "jobId": jl.JobId, "jobGroup": jl.JobGroup}, latestLog); err != nil {
 		log.Errorf(err.Error())
 	}
 
@@ -141,11 +140,11 @@ func CreateJobLog(j *node.Job, t time.Time, rs string, success bool) {
 		inc["failed"] = 1
 	}
 
-	err := db.mgoDB.Upsert(Coll_Stat, bson.M{"name": "job-day", "date": time.Now().Format("2006-01-02")}, bson.M{"$inc": inc})
+	err := db.GetDb().Upsert(Coll_Stat, bson.M{"name": "job-day", "date": time.Now().Format("2006-01-02")}, bson.M{"$inc": inc})
 	if err != nil {
 		log.Errorf("increase stat.job %s", err.Error())
 	}
-	err = db.mgoDB.Upsert(Coll_Stat, bson.M{"name": "job"}, bson.M{"$inc": inc})
+	err = db.GetDb().Upsert(Coll_Stat, bson.M{"name": "job"}, bson.M{"$inc": inc})
 	if err != nil {
 		log.Errorf("increase stat.job %s", err.Error())
 	}
@@ -159,13 +158,13 @@ type StatExecuted struct {
 }
 
 func JobLogStat() (s *StatExecuted, err error) {
-	err = db.mgoDB.FindOne(Coll_Stat, bson.M{"name": "job"}, &s)
+	err = db.GetDb().FindOne(Coll_Stat, bson.M{"name": "job"}, &s)
 	return
 }
 
 func JobLogDailyStat(begin, end time.Time) (ls []*StatExecuted, err error) {
 	const oneDay = time.Hour * 24
-	err = db.mgoDB.WithC(Coll_Stat, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_Stat, func(c *mgo.Collection) error {
 		dateList := make([]string, 0, 8)
 
 		cur := begin

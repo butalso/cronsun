@@ -26,48 +26,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="887d1e3d-3f4d-4b00-9aea-d76e05191456" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/common/db/error.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/conf/conf_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/conf/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/account.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/dal/mgo/account.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/job_log.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/dal/mgo/job_log.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/mdb.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/mdb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/mgo.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/mgo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/etcd/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/etcd/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/etcd/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/event/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/genid/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/genid/id.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/genid/id.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/log/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/utils/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/csctl/cmd/upgrade.go" beforeDir="false" afterPath="$PROJECT_DIR$/csctl/cmd/upgrade.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/error/errors.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/group.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/etcd/group.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/job.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/etcd/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/common/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/job.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/job.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/noticer.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/noticer/noticer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/once.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/once.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proc.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/proc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/administrator.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/administrator.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/authentication.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/authentication.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/base.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/base.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/configuration.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/info.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/job.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/job.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/job_log.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/job_log.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/log_cleaner.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/log_cleaner.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/routers.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/routers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/dal/mgo/job_log.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/dal/mgo/job_log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/web/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/noticer/noticer.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/noticer/noticer.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/session/session.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/session/session.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/static_assets.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/static_assets.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/service/job.go" beforeDir="false" afterPath="$PROJECT_DIR$/web/service/job.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,11 +77,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\code\go\src\github.com\butalso\cronsun\web\dal\mgo" />
-      <recent name="E:\code\go\src\github.com\butalso\cronsun\web\noticer" />
+      <recent name="E:\code\go\src\github.com\butalso\cronsun\web" />
       <recent name="E:\code\go\src\github.com\butalso\cronsun\node" />
-      <recent name="E:\code\go\src\github.com\butalso\cronsun\web\service" />
+      <recent name="E:\code\go\src\github.com\butalso\cronsun\common" />
       <recent name="E:\code\go\src\github.com\butalso\cronsun\common\etcd" />
+      <recent name="E:\code\go\src\github.com\butalso\cronsun\web\dal\mgo" />
     </key>
   </component>
   <component name="RunManager" selected="Go Test.TestInit in github.com/butalso/cronsun/common/conf (1)">
@@ -218,22 +186,22 @@
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
     <state x="740" y="-785" key="FileChooserDialogImpl/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591149372177" />
-    <state width="1877" height="567" key="GridCell.Tab.0.bottom" timestamp="1591417392171">
+    <state width="1877" height="567" key="GridCell.Tab.0.bottom" timestamp="1591426301731">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
-    <state width="1877" height="567" key="GridCell.Tab.0.bottom/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591417392171" />
-    <state width="1877" height="567" key="GridCell.Tab.0.center" timestamp="1591417392170">
+    <state width="1877" height="567" key="GridCell.Tab.0.bottom/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591426301731" />
+    <state width="1877" height="567" key="GridCell.Tab.0.center" timestamp="1591426301730">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
-    <state width="1877" height="567" key="GridCell.Tab.0.center/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591417392170" />
-    <state width="1877" height="567" key="GridCell.Tab.0.left" timestamp="1591417392169">
+    <state width="1877" height="567" key="GridCell.Tab.0.center/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591426301730" />
+    <state width="1877" height="567" key="GridCell.Tab.0.left" timestamp="1591426301730">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
-    <state width="1877" height="567" key="GridCell.Tab.0.left/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591417392169" />
-    <state width="1877" height="567" key="GridCell.Tab.0.right" timestamp="1591417392170">
+    <state width="1877" height="567" key="GridCell.Tab.0.left/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591426301730" />
+    <state width="1877" height="567" key="GridCell.Tab.0.right" timestamp="1591426301731">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
-    <state width="1877" height="567" key="GridCell.Tab.0.right/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591417392170" />
+    <state width="1877" height="567" key="GridCell.Tab.0.right/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591426301731" />
     <state x="461" y="-896" key="SettingsEditor" timestamp="1591149149558">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
@@ -242,10 +210,10 @@
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
     <state x="552" y="-807" key="Vcs.Push.Dialog.v2/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591235686461" />
-    <state x="662" y="-942" width="596" height="804" key="find.popup" timestamp="1591425344603">
+    <state x="662" y="-942" width="596" height="804" key="find.popup" timestamp="1591428482469">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
-    <state x="662" y="-942" width="596" height="804" key="find.popup/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591425344603" />
+    <state x="662" y="-942" width="596" height="804" key="find.popup/0.0.1536.864/0.-1080.1920.1080@0.-1080.1920.1080" timestamp="1591428482469" />
     <state x="800" y="-782" key="refactoring.ChangeSignatureDialog" timestamp="1591417891031">
       <screen x="0" y="-1080" width="1920" height="1080" />
     </state>
@@ -282,6 +250,11 @@
           <url>file://$PROJECT_DIR$/web/server.go</url>
           <line>2</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/common/conf/conf.go</url>
+          <line>14</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

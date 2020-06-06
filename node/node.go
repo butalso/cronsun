@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/etcd"
 	"io/ioutil"
 	"os"
 	"path"
@@ -25,7 +26,7 @@ type Node struct {
 	*cronsun.Node
 	*cron.Cron
 
-	jobs   Jobs // 和结点相关的任务
+	jobs   etcd.Jobs // 和结点相关的任务
 	groups Groups
 	cmds   map[string]*cronsun.Cmd
 
@@ -66,7 +67,7 @@ func NewNode(cfg *conf.Conf) (n *Node, err error) {
 		},
 		Cron: cron.New(),
 
-		jobs: make(Jobs, 8),
+		jobs: make(etcd.Jobs, 8),
 		cmds: make(map[string]*cronsun.Cmd),
 
 		link:   newLink(8),

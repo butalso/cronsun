@@ -15,8 +15,6 @@ import (
 	"github.com/cockroachdb/cmux"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/butalso/cronsun"
 	"github.com/butalso/cronsun/common/event"
 	"github.com/butalso/cronsun/common/log"
 )

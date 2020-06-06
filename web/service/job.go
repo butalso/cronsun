@@ -3,7 +3,10 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/db"
+	"github.com/butalso/cronsun/common/etcd"
 	"github.com/butalso/cronsun/web"
+	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 	"sort"
 	"strings"
@@ -11,7 +14,6 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/gorilla/mux"
 
-	"github.com/butalso/cronsun"
 	"github.com/butalso/cronsun/common/conf"
 	"github.com/butalso/cronsun/common/log"
 )
@@ -20,10 +22,10 @@ type Job struct{}
 
 func (j *Job) GetJob(ctx *Context) {
 	vars := mux.Vars(ctx.R)
-	job, err := cronsun.GetJob(vars["group"], vars["id"])
+	job, err := mgo.GetJob(vars["group"], vars["id"])
 	var statusCode int
 	if err != nil {
-		if err == cronsun.ErrNotFound {
+		if err == db.ErrNotFound {
 			statusCode = http.StatusNotFound
 		} else {
 			statusCode = http.StatusInternalServerError
@@ -37,7 +39,7 @@ func (j *Job) GetJob(ctx *Context) {
 
 func (j *Job) DeleteJob(ctx *Context) {
 	vars := mux.Vars(ctx.R)
-	_, err := cronsun.DeleteJob(vars["group"], vars["id"])
+	_, err := mgo.DeleteJob(vars["group"], vars["id"])
 	if err != nil {
 		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -47,7 +49,7 @@ func (j *Job) DeleteJob(ctx *Context) {
 }
 
 func (j *Job) ChangeJobStatus(ctx *Context) {
-	job := &cronsun.Job{}
+	job := &mgo.Job{}
 	decoder := json.NewDecoder(ctx.R.Body)
 	err := decoder.Decode(&job)
 	if err != nil {
@@ -66,8 +68,8 @@ func (j *Job) ChangeJobStatus(ctx *Context) {
 	web.outJSON(ctx.W, job)
 }
 
-func (j *Job) updateJobStatus(group, id string, isPause bool) (*cronsun.Job, error) {
-	originJob, rev, err := cronsun.GetJobAndRev(group, id)
+func (j *Job) updateJobStatus(group, id string, isPause bool) (*mgo.Job, error) {
+	originJob, rev, err := etcd.GetJobAndRev(group, id)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +84,7 @@ func (j *Job) updateJobStatus(group, id string, isPause bool) (*cronsun.Job, err
 		return nil, err
 	}
 
-	_, err = cronsun.DefalutClient.PutWithModRev(originJob.Key(), string(b), rev)
+	_, err = etcd.DefalutClient.PutWithModRev(originJob.Key(), string(b), rev)
 	if err != nil {
 		return nil, err
 	}

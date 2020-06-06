@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	etcd "github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/common/etcd"
 	"io/ioutil"
 	"net/http"
 	"time"

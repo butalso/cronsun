@@ -7,11 +7,11 @@ import (
 	"errors"
 	"fmt"
 	error2 "github.com/butalso/cronsun/common/error"
-	etcd2 "github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/common/genid"
+	"github.com/butalso/cronsun/common/noticer"
+	"github.com/butalso/cronsun/node/cron"
 	"github.com/butalso/cronsun/web/dal/mgo"
-	"github.com/butalso/cronsun/web/noticer"
-	"github.com/shunfei/cronsun/common/etcd"
-	"github.com/shunfei/cronsun/common/genid"
 	"os/exec"
 	"os/user"
 	"runtime"
@@ -23,10 +23,9 @@ import (
 
 	client "github.com/coreos/etcd/clientv3"
 
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
-	"github.com/shunfei/cronsun/node/cron"
-	"github.com/shunfei/cronsun/utils"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
+	"github.com/butalso/cronsun/common/utils"
 )
 
 type Jobs map[string]*Job
@@ -443,7 +442,7 @@ func (j *Job) GetNextRunTime() time.Time {
 func (j *Job) Run() bool {
 	var (
 		cmd         *exec.Cmd
-		proc        *Process
+		proc        *node.Process
 		sysProcAttr *syscall.SysProcAttr
 		err         error
 	)
@@ -474,12 +473,12 @@ func (j *Job) Run() bool {
 		return false
 	}
 
-	proc = &Process{
+	proc = &node.Process{
 		ID:          strconv.Itoa(cmd.Process.Pid),
 		JobID:       j.ID,
 		etcd2.Group: j.Group,
 		NodeID:      j.RunOn,
-		ProcessVal: ProcessVal{
+		ProcessVal: node.ProcessVal{
 			Time: t,
 		},
 	}
@@ -507,15 +506,7 @@ func (j *Job) RunWithRecovery() {
 	j.Run()
 }
 
-// 从 etcd 的 key 中取 id
-func GetIDFromKey(key string) string {
-	index := strings.LastIndex(key, "/")
-	if index < 0 {
-		return ""
-	}
 
-	return key[index+1:]
-}
 
 func JobKey(group, id string) string {
 	return conf.Config.Cmd + group + "/" + id

@@ -149,3 +149,13 @@ func NewEtcdTimeoutContext(c *Client) (context.Context, context.CancelFunc) {
 	etcdCtx.etcdEndpoints = c.Endpoints()
 	return etcdCtx, cancel
 }
+
+// 从 etcd 的 key 中取 id
+func GetIDFromKey(key string) string {
+	index := strings.LastIndex(key, "/")
+	if index < 0 {
+		return ""
+	}
+
+	return key[index+1:]
+}
