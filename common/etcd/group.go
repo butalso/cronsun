@@ -3,6 +3,7 @@ package cronsun
 import (
 	"encoding/json"
 	"fmt"
+	error2 "github.com/butalso/cronsun/common/error"
 	"github.com/shunfei/cronsun/common/etcd"
 	"strings"
 
@@ -97,12 +98,12 @@ func (g *Group) Put(modRev int64) (*client.PutResponse, error) {
 func (g *Group) Check() error {
 	g.ID = strings.TrimSpace(g.ID)
 	if !etcd.IsValidAsKeyPath(g.ID) {
-		return ErrIllegalNodeGroupId
+		return error2.ErrIllegalNodeGroupId
 	}
 
 	g.Name = strings.TrimSpace(g.Name)
 	if len(g.Name) == 0 {
-		return ErrEmptyNodeGroupName
+		return error2.ErrEmptyNodeGroupName
 	}
 
 	return nil

@@ -1,10 +1,10 @@
-package web
+package service
 
 import (
+	"github.com/butalso/cronsun/common/db"
 	"time"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun/common/log"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -27,7 +27,7 @@ func RunLogCleaner(cleanPeriod, expiration time.Duration) (close chan struct{}) 
 }
 
 func cleanupLogs(expiration time.Duration) {
-	err := cronsun.GetDb().WithC(cronsun.Coll_JobLog, func(c *mgo.Collection) error {
+	err := db.GetDb().WithC(mgo.Coll_JobLog, func(c *mgo.Collection) error {
 		_, err := c.RemoveAll(bson.M{"$or": []bson.M{
 			bson.M{"$and": []bson.M{
 				bson.M{"cleanup": bson.M{"$exists": true}},

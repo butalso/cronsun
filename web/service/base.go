@@ -1,25 +1,26 @@
-package web
+package service
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
-	"github.com/shunfei/cronsun/web/session"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
+	"github.com/butalso/cronsun/web/session"
 )
 
 var sessManager session.SessionManager
 
 func InitServer() (*http.Server, error) {
-	sessManager = session.NewEtcdStore(cronsun.DefalutClient, conf.Config.Web.Session)
+	sessManager = session.NewEtcdStore(etcd.DefalutClient, conf.Config.Web.Session)
 
 	var err error
 	if err = checkAuthBasicData(); err != nil {
@@ -70,14 +71,14 @@ func NewBaseHandler(f func(ctx *Context)) BaseHandler {
 	}
 }
 
-func NewAuthHandler(f func(ctx *Context), reqRole cronsun.Role) BaseHandler {
+func NewAuthHandler(f func(ctx *Context), reqRole mgo.Role) BaseHandler {
 	return BaseHandler{
 		BeforeHandle: authHandler(true, reqRole),
 		Handle:       f,
 	}
 }
 
-func authHandler(needAuth bool, reqRole cronsun.Role) func(*Context) bool {
+func authHandler(needAuth bool, reqRole mgo.Role) func(*Context) bool {
 	return func(ctx *Context) (abort bool) {
 		var err error
 		ctx.Session, err = sessManager.Get(ctx.W, ctx.R)
@@ -109,7 +110,7 @@ func authHandler(needAuth bool, reqRole cronsun.Role) func(*Context) bool {
 			outJSONWithCode(ctx.W, http.StatusUnauthorized, "role unknow.")
 			abort = true
 			return
-		} else if role, ok := r.(cronsun.Role); !ok {
+		} else if role, ok := r.(mgo.Role); !ok {
 			outJSONWithCode(ctx.W, http.StatusUnauthorized, "role unknow.")
 			abort = true
 			return

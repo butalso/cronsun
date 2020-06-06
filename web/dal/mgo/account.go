@@ -1,7 +1,8 @@
-package db
+package mgo
 
 import (
-	"github.com/shunfei/cronsun/db"
+	"github.com/butalso/cronsun/common/db"
+	"gopkg.in/mgo.v2"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -68,38 +69,38 @@ func (s UserStatus) Defined() bool {
 }
 
 func GetAccounts(query bson.M) (list []Account, err error) {
-	err = db.mgoDB.WithC(Coll_Account, func(c *mgo.Collection) error {
+	err = db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Find(query).All(&list)
 	})
 	return
 }
 
 func GetAccountByEmail(email string) (u *Account, err error) {
-	err = db.mgoDB.FindOne(Coll_Account, bson.M{"email": email}, &u)
+	err = db.GetDb().FindOne(Coll_Account, bson.M{"email": email}, &u)
 	return
 }
 
 func CreateAccount(u *Account) error {
 	u.ID = bson.NewObjectId()
 	u.CreateTime = time.Now()
-	return db.mgoDB.Insert(Coll_Account, u)
+	return db.GetDb().Insert(Coll_Account, u)
 
 }
 
 func UpdateAccount(query bson.M, change bson.M) error {
-	return db.mgoDB.WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Update(query, bson.M{"$set": change})
 	})
 }
 
 func BanAccount(email string) error {
-	return db.mgoDB.WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Update(bson.M{"email": email}, bson.M{"$set": bson.M{"status": UserBanned}})
 	})
 }
 
 func EnsureAccountIndex() error {
-	return db.mgoDB.WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.EnsureIndex(mgo.Index{
 			Key:    []string{"email"},
 			Unique: true,

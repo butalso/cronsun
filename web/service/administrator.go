@@ -1,23 +1,23 @@
-package web
+package service
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/db"
+	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/log"
-	mgo "gopkg.in/mgo.v2"
+	"github.com/butalso/cronsun/common/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
 type Administrator struct{}
 
 func adminAuthHandler(ctx *Context) (abort bool) {
-	return authHandler(true, cronsun.Administrator)(ctx)
+	return authHandler(true, mgo.Administrator)(ctx)
 }
 
 func NewAdminAuthHandler(f func(ctx *Context)) BaseHandler {
@@ -28,16 +28,16 @@ func NewAdminAuthHandler(f func(ctx *Context)) BaseHandler {
 }
 
 type Account struct {
-	Role       cronsun.Role       `json:"role"`
+	Role       mgo.Role       `json:"role"`
 	Email      string             `json:"email"`
-	Status     cronsun.UserStatus `json:"status"`
+	Status     mgo.UserStatus `json:"status"`
 	Session    bool               `json:"session"`
 	CreateTime time.Time          `json:"createTime"`
 }
 
 func (this *Administrator) GetAccountList(ctx *Context) {
 
-	list, err := cronsun.GetAccounts(nil)
+	list, err := mgo.GetAccounts(nil)
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -65,9 +65,9 @@ func (this *Administrator) GetAccount(ctx *Context) {
 		return
 	}
 
-	u, err := cronsun.GetAccountByEmail(email)
+	u, err := mgo.GetAccountByEmail(email)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == db.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, fmt.Sprintf("Email [%s] not found.", email))
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
@@ -86,7 +86,7 @@ func (this *Administrator) GetAccount(ctx *Context) {
 
 func (this *Administrator) AddAccount(ctx *Context) {
 	account := struct {
-		Role     cronsun.Role `json:"role"`
+		Role     mgo.Role `json:"role"`
 		Email    string       `json:"email"`
 		Password string       `json:"password"`
 	}{}
@@ -116,18 +116,18 @@ func (this *Administrator) AddAccount(ctx *Context) {
 		return
 	}
 
-	u, err := cronsun.GetAccountByEmail(account.Email)
+	u, err := mgo.GetAccountByEmail(account.Email)
 	if err == nil || u != nil {
 		outJSONWithCode(ctx.W, http.StatusConflict, fmt.Sprintf("Email [%s] has been used.", account.Email))
 		return
 	}
 
 	salt := genSalt()
-	err = cronsun.CreateAccount(&cronsun.Account{
+	err = mgo.CreateAccount(&mgo.Account{
 		Role:     account.Role,
 		Email:    account.Email,
 		Salt:     salt,
-		Status:   cronsun.UserActived,
+		Status:   mgo.UserActived,
 		Password: encryptPassword(account.Password, salt),
 	})
 	if err != nil {
@@ -140,11 +140,11 @@ func (this *Administrator) AddAccount(ctx *Context) {
 
 func (this *Administrator) UpdateAccount(ctx *Context) {
 	account := struct {
-		Role        cronsun.Role       `json:"role"`
+		Role        mgo.Role       `json:"role"`
 		OriginEmail string             `json:"originEmail"`
 		Email       string             `json:"email"`
 		Password    string             `json:"password"`
-		Status      cronsun.UserStatus `json:"status"`
+		Status      mgo.UserStatus `json:"status"`
 	}{}
 
 	decoder := json.NewDecoder(ctx.R.Body)
@@ -177,9 +177,9 @@ func (this *Administrator) UpdateAccount(ctx *Context) {
 		return
 	}
 
-	originAccount, err := cronsun.GetAccountByEmail(account.OriginEmail)
+	originAccount, err := mgo.GetAccountByEmail(account.OriginEmail)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == db.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, "Email not found.")
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
@@ -216,7 +216,7 @@ func (this *Administrator) UpdateAccount(ctx *Context) {
 		return
 	}
 
-	err = cronsun.UpdateAccount(bson.M{"email": account.OriginEmail}, update)
+	err = mgo.UpdateAccount(bson.M{"email": account.OriginEmail}, update)
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusBadRequest, fmt.Sprintf("Failed to update user: %s.", err.Error()))
 		return
@@ -236,7 +236,7 @@ func (this *Administrator) UpdateAccount(ctx *Context) {
 }
 
 func (this *Administrator) removeSession(email string) {
-	u, err := cronsun.GetAccountByEmail(email)
+	u, err := mgo.GetAccountByEmail(email)
 	if err != nil {
 		log.Errorf("Failed to remove user [%s] session: %s", email, err.Error())
 		return

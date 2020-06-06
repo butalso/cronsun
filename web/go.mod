@@ -1,3 +1,3 @@
-module github.com/shunfei/cronsun/web
+module github.com/butalso/cronsun/web
 
 go 1.14

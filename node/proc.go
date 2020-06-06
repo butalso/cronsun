@@ -179,7 +179,7 @@ func (p *Process) Val() (string, error) {
 }
 
 // 获取节点正在执行任务的数量
-func (j *Job) CountRunning() (int64, error) {
+func (j *etcd2.Job) CountRunning() (int64, error) {
 	resp, err := etcd.DefalutClient.Get(conf.Config.Proc+j.runOn+"/"+j.Group+"/"+j.ID, client.WithPrefix(), client.WithCountOnly())
 	if err != nil {
 		return 0, err

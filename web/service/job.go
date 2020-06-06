@@ -1,8 +1,9 @@
-package web
+package service
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/web"
 	"net/http"
 	"sort"
 	"strings"
@@ -10,9 +11,9 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/gorilla/mux"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
 )
 
 type Job struct{}
@@ -27,22 +28,22 @@ func (j *Job) GetJob(ctx *Context) {
 		} else {
 			statusCode = http.StatusInternalServerError
 		}
-		outJSONWithCode(ctx.W, statusCode, err.Error())
+		web.outJSONWithCode(ctx.W, statusCode, err.Error())
 		return
 	}
 
-	outJSON(ctx.W, job)
+	web.outJSON(ctx.W, job)
 }
 
 func (j *Job) DeleteJob(ctx *Context) {
 	vars := mux.Vars(ctx.R)
 	_, err := cronsun.DeleteJob(vars["group"], vars["id"])
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	outJSONWithCode(ctx.W, http.StatusNoContent, nil)
+	web.outJSONWithCode(ctx.W, http.StatusNoContent, nil)
 }
 
 func (j *Job) ChangeJobStatus(ctx *Context) {
@@ -50,7 +51,7 @@ func (j *Job) ChangeJobStatus(ctx *Context) {
 	decoder := json.NewDecoder(ctx.R.Body)
 	err := decoder.Decode(&job)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
 		return
 	}
 	ctx.R.Body.Close()
@@ -58,11 +59,11 @@ func (j *Job) ChangeJobStatus(ctx *Context) {
 	vars := mux.Vars(ctx.R)
 	job, err = j.updateJobStatus(vars["group"], vars["id"], job.Pause)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	outJSON(ctx.W, job)
+	web.outJSON(ctx.W, job)
 }
 
 func (j *Job) updateJobStatus(group, id string, isPause bool) (*cronsun.Job, error) {
@@ -94,7 +95,7 @@ func (j *Job) BatchChangeJobStatus(ctx *Context) {
 	decoder := json.NewDecoder(ctx.R.Body)
 	err := decoder.Decode(&jobIds)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
 		return
 	}
 	ctx.R.Body.Close()
@@ -107,7 +108,7 @@ func (j *Job) BatchChangeJobStatus(ctx *Context) {
 		isPause = true
 	case "start":
 	default:
-		outJSONWithCode(ctx.W, http.StatusBadRequest, "Unknow batch operation.")
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, "Unknow batch operation.")
 		return
 	}
 
@@ -125,7 +126,7 @@ func (j *Job) BatchChangeJobStatus(ctx *Context) {
 		updated++
 	}
 
-	outJSON(ctx.W, fmt.Sprintf("%d of %d updated.", updated, len(jobIds)))
+	web.outJSON(ctx.W, fmt.Sprintf("%d of %d updated.", updated, len(jobIds)))
 }
 
 func (j *Job) UpdateJob(ctx *Context) {
@@ -137,13 +138,13 @@ func (j *Job) UpdateJob(ctx *Context) {
 	decoder := json.NewDecoder(ctx.R.Body)
 	err := decoder.Decode(&job)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
 		return
 	}
 	ctx.R.Body.Close()
 
 	if err = job.Check(); err != nil {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -161,7 +162,7 @@ func (j *Job) UpdateJob(ctx *Context) {
 
 	b, err := json.Marshal(job)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -170,24 +171,24 @@ func (j *Job) UpdateJob(ctx *Context) {
 	if len(deleteOldKey) > 0 {
 		if _, err = cronsun.DefalutClient.Delete(deleteOldKey); err != nil {
 			log.Errorf("failed to remove old job key[%s], err: %s.", deleteOldKey, err.Error())
-			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+			web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
 
 	_, err = cronsun.DefalutClient.Put(job.Key(), string(b))
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	outJSONWithCode(ctx.W, successCode, nil)
+	web.outJSONWithCode(ctx.W, successCode, nil)
 }
 
 func (j *Job) GetGroups(ctx *Context) {
 	resp, err := cronsun.DefalutClient.Get(conf.Config.Cmd, clientv3.WithPrefix(), clientv3.WithKeysOnly())
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -205,12 +206,12 @@ func (j *Job) GetGroups(ctx *Context) {
 	}
 
 	sort.Strings(groupList)
-	outJSON(ctx.W, groupList)
+	web.outJSON(ctx.W, groupList)
 }
 
 func (j *Job) GetList(ctx *Context) {
-	group := getStringVal("group", ctx.R)
-	node := getStringVal("node", ctx.R)
+	group := web.getStringVal("group", ctx.R)
+	node := web.getStringVal("node", ctx.R)
 	var prefix = conf.Config.Cmd
 	if len(group) != 0 {
 		prefix += group
@@ -224,7 +225,7 @@ func (j *Job) GetList(ctx *Context) {
 
 	resp, err := cronsun.DefalutClient.Get(prefix, clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortAscend))
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -232,7 +233,7 @@ func (j *Job) GetList(ctx *Context) {
 	if len(node) > 0 {
 		nodeGrouplist, err := cronsun.GetNodeGroups()
 		if err != nil {
-			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+			web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 			return
 		}
 		nodeGroupMap = map[string]*cronsun.Group{}
@@ -247,7 +248,7 @@ func (j *Job) GetList(ctx *Context) {
 		job := cronsun.Job{}
 		err = json.Unmarshal(resp.Kvs[i].Value, &job)
 		if err != nil {
-			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+			web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -273,7 +274,7 @@ func (j *Job) GetList(ctx *Context) {
 		}
 	}
 
-	outJSON(ctx.W, jobList)
+	web.outJSON(ctx.W, jobList)
 }
 
 func (j *Job) GetJobNodes(ctx *Context) {
@@ -286,7 +287,7 @@ func (j *Job) GetJobNodes(ctx *Context) {
 		} else {
 			statusCode = http.StatusInternalServerError
 		}
-		outJSONWithCode(ctx.W, statusCode, err.Error())
+		web.outJSONWithCode(ctx.W, statusCode, err.Error())
 		return
 	}
 
@@ -294,7 +295,7 @@ func (j *Job) GetJobNodes(ctx *Context) {
 	var exNodes []string
 	groups, err := cronsun.GetGroups("")
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -310,7 +311,7 @@ func (j *Job) GetJobNodes(ctx *Context) {
 		nodes = append(nodes, inNodes...)
 	}
 
-	outJSON(ctx.W, UniqueStringArray(nodes))
+	web.outJSON(ctx.W, UniqueStringArray(nodes))
 }
 
 func (j *Job) JobExecute(ctx *Context) {
@@ -318,30 +319,30 @@ func (j *Job) JobExecute(ctx *Context) {
 	group := strings.TrimSpace(vars["group"])
 	id := strings.TrimSpace(vars["id"])
 	if len(group) == 0 || len(id) == 0 {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, "Invalid job id or group.")
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, "Invalid job id or group.")
 		return
 	}
 
-	node := getStringVal("node", ctx.R)
+	node := web.getStringVal("node", ctx.R)
 	err := cronsun.PutOnce(group, id, node)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	outJSONWithCode(ctx.W, http.StatusNoContent, nil)
+	web.outJSONWithCode(ctx.W, http.StatusNoContent, nil)
 }
 
 func (j *Job) GetExecutingJob(ctx *Context) {
 	opt := &ProcFetchOptions{
-		Groups:  getStringArrayFromQuery("groups", ",", ctx.R),
-		NodeIds: getStringArrayFromQuery("nodes", ",", ctx.R),
-		JobIds:  getStringArrayFromQuery("jobs", ",", ctx.R),
+		Groups:  web.getStringArrayFromQuery("groups", ",", ctx.R),
+		NodeIds: web.getStringArrayFromQuery("nodes", ",", ctx.R),
+		JobIds:  web.getStringArrayFromQuery("jobs", ",", ctx.R),
 	}
 
 	gresp, err := cronsun.DefalutClient.Get(conf.Config.Proc, clientv3.WithPrefix())
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -378,42 +379,42 @@ func (j *Job) GetExecutingJob(ctx *Context) {
 	}
 
 	sort.Sort(ByProcTime(list))
-	outJSON(ctx.W, list)
+	web.outJSON(ctx.W, list)
 }
 
 func (j *Job) KillExecutingJob(ctx *Context) {
 	proc := &cronsun.Process{
-		ID:     getStringVal("pid", ctx.R),
-		JobID:  getStringVal("job", ctx.R),
-		Group:  getStringVal("group", ctx.R),
-		NodeID: getStringVal("node", ctx.R),
+		ID:     web.getStringVal("pid", ctx.R),
+		JobID:  web.getStringVal("job", ctx.R),
+		Group:  web.getStringVal("group", ctx.R),
+		NodeID: web.getStringVal("node", ctx.R),
 	}
 
 	if proc.ID == "" || proc.JobID == "" || proc.Group == "" || proc.NodeID == "" {
-		outJSONWithCode(ctx.W, http.StatusBadRequest, "Invalid process info.")
+		web.outJSONWithCode(ctx.W, http.StatusBadRequest, "Invalid process info.")
 		return
 	}
 
 	procKey := proc.Key()
 	resp, err := cronsun.DefalutClient.Get(procKey)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if len(resp.Kvs) < 1 {
-		outJSONWithCode(ctx.W, http.StatusNotFound, "Porcess not found")
+		web.outJSONWithCode(ctx.W, http.StatusNotFound, "Porcess not found")
 		return
 	}
 
 	var procVal = &cronsun.ProcessVal{}
 	err = json.Unmarshal(resp.Kvs[0].Value, &procVal)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if procVal.Killed {
-		outJSONWithCode(ctx.W, http.StatusOK, "Killing process")
+		web.outJSONWithCode(ctx.W, http.StatusOK, "Killing process")
 		return
 	}
 
@@ -421,17 +422,17 @@ func (j *Job) KillExecutingJob(ctx *Context) {
 	proc.ProcessVal = *procVal
 	str, err := proc.Val()
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	_, err = cronsun.DefalutClient.Put(procKey, str)
 	if err != nil {
-		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
+		web.outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	outJSONWithCode(ctx.W, http.StatusOK, "Killing process")
+	web.outJSONWithCode(ctx.W, http.StatusOK, "Killing process")
 }
 
 type ProcFetchOptions struct {

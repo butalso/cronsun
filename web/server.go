@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/shunfei/cronsun/common/db"
-	"github.com/shunfei/cronsun/common/etcd"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/db"
+	"github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/web/service"
 	slog "log"
 	"net"
 	"os"
@@ -14,11 +16,9 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/event"
-	"github.com/shunfei/cronsun/log"
-	"github.com/shunfei/cronsun/web"
+	"github.com/butalso/cronsun"
+	"github.com/butalso/cronsun/common/event"
+	"github.com/butalso/cronsun/common/log"
 )
 
 var (
@@ -43,7 +43,7 @@ func main() {
 		log.Errorf(err.Error())
 		return
 	}
-	web.EnsureJobLogIndex()
+	service.EnsureJobLogIndex()
 
 	l, err := net.Listen(checkNetworkProtocol(*network), conf.Config.Web.BindAddr)
 	if err != nil {
@@ -73,13 +73,13 @@ func main() {
 			}
 			noticer = mailer
 		}
-		go cronsun.StartNoticer(noticer)
+		go noticer.StartNoticer(noticer)
 	}
 
 	period := int64(conf.Config.Web.LogCleaner.EveryMinute)
 	var stopCleaner func(interface{})
 	if period > 0 {
-		closeChan := web.RunLogCleaner(time.Duration(period)*time.Minute, time.Duration(conf.Config.Web.LogCleaner.ExpirationDays)*time.Hour*24)
+		closeChan := service.RunLogCleaner(time.Duration(period)*time.Minute, time.Duration(conf.Config.Web.LogCleaner.ExpirationDays)*time.Hour*24)
 		stopCleaner = func(i interface{}) {
 			close(closeChan)
 		}
@@ -119,11 +119,6 @@ var (
 )
 
 func Init(baseConfFile string, watchConfiFile bool) (err error) {
-	// init id creator
-	if err = cronsun.initID(); err != nil {
-		return fmt.Errorf("Init UUID Generator failed: %s", err)
-	}
-
 	// init config
 	if err = conf.Init(baseConfFile, watchConfiFile); err != nil {
 		return fmt.Errorf("Init Config failed: %s", err)
@@ -136,7 +131,7 @@ func Init(baseConfFile string, watchConfiFile bool) (err error) {
 	}
 
 	// init mongoDB
-	if db.mgoDB, err = db.NewMdb(conf.Config.Mgo); err != nil {
+	if db.mgoDB, err = db.NewMdb(conf.MgoConfig.Mgo); err != nil {
 		return fmt.Errorf("Connect to MongoDB %s failed: %s",
 			conf.Config.Mgo.Hosts, err)
 	}

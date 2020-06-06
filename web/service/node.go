@@ -1,8 +1,9 @@
-package web
+package service
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/butalso/cronsun/common/etcd"
 	"net/http"
 	"strings"
 
@@ -10,9 +11,8 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
 )
 
 type Node struct{}
@@ -20,7 +20,7 @@ type Node struct{}
 var ngKeyDeepLen = len(conf.Config.Group)
 
 func (n *Node) UpdateGroup(ctx *Context) {
-	g := cronsun.Group{}
+	g := etcd.Group{}
 	de := json.NewDecoder(ctx.R.Body)
 	var err error
 	if err = de.Decode(&g); err != nil {
@@ -33,7 +33,7 @@ func (n *Node) UpdateGroup(ctx *Context) {
 	g.ID = strings.TrimSpace(g.ID)
 	if len(g.ID) == 0 {
 		successCode = http.StatusCreated
-		g.ID = cronsun.NextID()
+		g.ID = etcd.NextID()
 	}
 
 	if err = g.Check(); err != nil {
@@ -52,7 +52,7 @@ func (n *Node) UpdateGroup(ctx *Context) {
 }
 
 func (n *Node) GetGroups(ctx *Context) {
-	list, err := cronsun.GetNodeGroups()
+	list, err := etcd.GetNodeGroups()
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -63,7 +63,7 @@ func (n *Node) GetGroups(ctx *Context) {
 
 func (n *Node) GetGroupByGroupId(ctx *Context) {
 	vars := mux.Vars(ctx.R)
-	g, err := cronsun.GetGroupById(vars["id"])
+	g, err := etcd.GetGroupById(vars["id"])
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -84,13 +84,13 @@ func (n *Node) DeleteGroup(ctx *Context) {
 		return
 	}
 
-	_, err := cronsun.DeleteGroupById(groupId)
+	_, err := etcd.DeleteGroupById(groupId)
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	gresp, err := cronsun.DefalutClient.Get(conf.Config.Cmd, v3.WithPrefix())
+	gresp, err := etcd.DefalutClient.Get(conf.Config.Cmd, v3.WithPrefix())
 	if err != nil {
 		errstr := fmt.Sprintf("failed to fetch jobs from etcd after deleted node group[%s]: %s", groupId, err.Error())
 		log.Errorf(errstr)
@@ -100,7 +100,7 @@ func (n *Node) DeleteGroup(ctx *Context) {
 
 	// update rule's node group
 	for i := range gresp.Kvs {
-		job := cronsun.Job{}
+		job := etcd.Job{}
 		err = json.Unmarshal(gresp.Kvs[i].Value, &job)
 		key := string(gresp.Kvs[i].Key)
 		if err != nil {
@@ -128,7 +128,7 @@ func (n *Node) DeleteGroup(ctx *Context) {
 				log.Errorf("failed to marshal job[%s]: %s", key, err.Error())
 				continue
 			}
-			_, err = cronsun.DefalutClient.PutWithModRev(key, string(v), gresp.Kvs[i].ModRevision)
+			_, err = etcd.DefalutClient.PutWithModRev(key, string(v), gresp.Kvs[i].ModRevision)
 			if err != nil {
 				log.Errorf("failed to update job[%s]: %s", key, err.Error())
 				continue
@@ -140,13 +140,13 @@ func (n *Node) DeleteGroup(ctx *Context) {
 }
 
 func (n *Node) GetNodes(ctx *Context) {
-	nodes, err := cronsun.GetNodes()
+	nodes, err := etcd.GetNodes()
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	gresp, err := cronsun.DefalutClient.Get(conf.Config.Node, v3.WithPrefix(), v3.WithKeysOnly())
+	gresp, err := etcd.DefalutClient.Get(conf.Config.Node, v3.WithPrefix(), v3.WithKeysOnly())
 	if err == nil {
 		connecedMap := make(map[string]bool, gresp.Count)
 		for i := range gresp.Kvs {
@@ -174,7 +174,7 @@ func (n *Node) DeleteNode(ctx *Context) {
 		return
 	}
 
-	resp, err := cronsun.DefalutClient.Get(conf.Config.Node + ip)
+	resp, err := etcd.DefalutClient.Get(conf.Config.Node + ip)
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -185,7 +185,7 @@ func (n *Node) DeleteNode(ctx *Context) {
 		return
 	}
 
-	err = cronsun.RemoveNode(bson.M{"_id": ip})
+	err = etcd.RemoveNode(bson.M{"_id": ip})
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
 		return
@@ -193,14 +193,14 @@ func (n *Node) DeleteNode(ctx *Context) {
 
 	// remove node from group
 	var errmsg = "failed to remove node %s from groups, please remove it manually: %s"
-	resp, err = cronsun.DefalutClient.Get(conf.Config.Group, v3.WithPrefix())
+	resp, err = etcd.DefalutClient.Get(conf.Config.Group, v3.WithPrefix())
 	if err != nil {
 		outJSONWithCode(ctx.W, http.StatusInternalServerError, fmt.Sprintf(errmsg, ip, err.Error()))
 		return
 	}
 
 	for i := range resp.Kvs {
-		g := cronsun.Group{}
+		g := etcd.Group{}
 		err = json.Unmarshal(resp.Kvs[i].Value, &g)
 		if err != nil {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, fmt.Sprintf(errmsg, ip, err.Error()))

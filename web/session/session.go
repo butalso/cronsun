@@ -4,19 +4,20 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
+	"github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 
 	client "github.com/coreos/etcd/clientv3"
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
-	"github.com/shunfei/cronsun/utils"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
+	"github.com/butalso/cronsun/common/utils"
 )
 
 func init() {
-	gob.Register(cronsun.Administrator)
-	gob.Register(cronsun.Developer)
-	gob.Register(cronsun.Reporter)
+	gob.Register(mgo.Administrator)
+	gob.Register(mgo.Developer)
+	gob.Register(mgo.Reporter)
 }
 
 var Manager SessionManager
@@ -53,11 +54,11 @@ func (s *Session) Store() error {
 }
 
 type EtcdStore struct {
-	client *cronsun.Client
+	client *etcd.Client
 	conf   conf.SessionConfig
 }
 
-func NewEtcdStore(cli *cronsun.Client, conf conf.SessionConfig) *EtcdStore {
+func NewEtcdStore(cli *etcd.Client, conf conf.SessionConfig) *EtcdStore {
 	return &EtcdStore{
 		client: cli,
 		conf:   conf,

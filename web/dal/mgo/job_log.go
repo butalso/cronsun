@@ -1,14 +1,15 @@
-package db
+package mgo
 
 import (
-	"github.com/shunfei/cronsun"
-	"github.com/shunfei/cronsun/db"
+	"github.com/butalso/cronsun/common/db"
+	"github.com/butalso/cronsun/etcd/node"
+	"gopkg.in/mgo.v2"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/shunfei/cronsun/conf"
-	"github.com/shunfei/cronsun/log"
+	"github.com/butalso/cronsun/common/conf"
+	"github.com/butalso/cronsun/common/log"
 )
 
 const (
@@ -86,7 +87,7 @@ func GetJobLatestLogListByJobIds(jobIds []string) (m map[string]*JobLatestLog, e
 	return
 }
 
-func CreateJobLog(j *cronsun.Job, t time.Time, rs string, success bool) {
+func CreateJobLog(j *node.Job, t time.Time, rs string, success bool) {
 	et := time.Now()
 	j.Avg(t, et)
 
@@ -98,9 +99,9 @@ func CreateJobLog(j *cronsun.Job, t time.Time, rs string, success bool) {
 		Name:     j.Name,
 		User:     j.User,
 
-		Node:     j.runOn,
-		Hostname: j.hostname,
-		IP:       j.ip,
+		Node:     j.RunOn,
+		Hostname: j.Hostname,
+		IP:       j.Ip,
 
 		Command: j.Command,
 		Output:  rs,
