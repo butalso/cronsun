@@ -87,7 +87,7 @@ func GetNodes() (nodes []*Node, err error) {
 }
 
 func GetNodesBy(query interface{}) (nodes []*Node, err error) {
-	err = db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_Node, func(c *mgo.Collection) error {
 		return c.Find(query).All(&nodes)
 	})
 
@@ -95,19 +95,19 @@ func GetNodesBy(query interface{}) (nodes []*Node, err error) {
 }
 
 func GetNodesByID(id string) (node *Node, err error) {
-	err = db.GetDb().FindId(Coll_Node, id, &node)
+	err = db.GetDB().FindId(Coll_Node, id, &node)
 	return
 }
 
 func RemoveNode(query interface{}) error {
-	return db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
+	return db.GetDB().WithC(Coll_Node, func(c *mgo.Collection) error {
 		return c.Remove(query)
 	})
 }
 
 func ISNodeAlive(id string) (bool, error) {
 	n := 0
-	err := db.GetDb().WithC(Coll_Node, func(c *mgo.Collection) error {
+	err := db.GetDB().WithC(Coll_Node, func(c *mgo.Collection) error {
 		var e error
 		n, e = c.Find(bson.M{"_id": id, "alived": true}).Count()
 		return e
@@ -153,7 +153,7 @@ func (n *Node) Down() {
 }
 
 func (n *Node) SyncToMgo() {
-	if err := db.GetDb().Upsert(Coll_Node, bson.M{"_id": n.ID}, n); err != nil {
+	if err := db.GetDB().Upsert(Coll_Node, bson.M{"_id": n.ID}, n); err != nil {
 		log.Errorf(err.Error())
 	}
 }

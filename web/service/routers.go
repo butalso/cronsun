@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/butalso/cronsun/web/dal/mgo"
+	"github.com/butalso/cronsun/web/asset"
 	"net/http"
 	"path"
 	"strings"
@@ -132,7 +133,7 @@ func (s *embeddedFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fp = strings.TrimLeft(fp, "/")
 	}
 
-	b, err := Asset(fp)
+	b, err := asset.Asset(fp)
 	if err == nil {
 		w.Write(b)
 		return
@@ -146,7 +147,7 @@ func (s *embeddedFileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	// w.Header().Set("Expires", "0")
 
-	b, err = Asset(fp)
+	b, err = asset.Asset(fp)
 	if err == nil {
 		w.Write(b)
 		return

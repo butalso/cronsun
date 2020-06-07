@@ -3,9 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/butalso/cronsun/common/db"
 	"github.com/butalso/cronsun/common/etcd"
-	"github.com/butalso/cronsun/web"
 	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 	"sort"
@@ -16,6 +14,8 @@ import (
 
 	"github.com/butalso/cronsun/common/conf"
 	"github.com/butalso/cronsun/common/log"
+	mgo2 "gopkg.in/mgo.v2"
+
 )
 
 type Job struct{}
@@ -25,7 +25,7 @@ func (j *Job) GetJob(ctx *Context) {
 	job, err := mgo.GetJob(vars["group"], vars["id"])
 	var statusCode int
 	if err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			statusCode = http.StatusNotFound
 		} else {
 			statusCode = http.StatusInternalServerError

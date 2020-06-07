@@ -8,9 +8,9 @@ import (
 const VersionNumber = "0.3.5"
 
 var (
-	Version = fmt.Sprintf("v%s (build %s)", VersionNumber, runtime.Version())
+	version = fmt.Sprintf("v%s (build %s)", VersionNumber, runtime.Version())
 )
 
 func GetVersion(ctx *Context) {
-	outJSON(ctx.W, Version)
+	outJSON(ctx.W, version)
 }

@@ -5,8 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/butalso/cronsun/common/db"
-	"gopkg.in/mgo.v2"
+	"github.com/butalso/cronsun/web/dal/mgo"
+	mgo2 "gopkg.in/mgo.v2"
 	"net/http"
 
 	"strings"
@@ -15,7 +15,6 @@ import (
 	"github.com/butalso/cronsun/common/log"
 	"github.com/butalso/cronsun/common/utils"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/butalso/cronsun/web/dal/mgo"
 )
 
 func checkAuthBasicData() error {
@@ -96,7 +95,7 @@ func (this *Authentication) GetAuthSession(ctx *Context) {
 
 	u, err := mgo.GetAccountByEmail(email)
 	if err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, "User ["+email+"] not found.")
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
@@ -169,7 +168,7 @@ func (this *Authentication) SetPassword(ctx *Context) {
 	var email = ctx.Session.Email
 	u, err := mgo.GetAccountByEmail(email)
 	if err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, "User ["+email+"] not found.")
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
@@ -189,7 +188,7 @@ func (this *Authentication) SetPassword(ctx *Context) {
 	}
 
 	if err = mgo.UpdateAccount(bson.M{"email": email}, update); err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusBadRequest, "User ["+email+"] not found.")
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/butalso/cronsun/common/etcd"
+	"github.com/butalso/cronsun/common/genid"
 	"net/http"
 	"strings"
 
@@ -33,7 +34,7 @@ func (n *Node) UpdateGroup(ctx *Context) {
 	g.ID = strings.TrimSpace(g.ID)
 	if len(g.ID) == 0 {
 		successCode = http.StatusCreated
-		g.ID = etcd.NextID()
+		g.ID = genid.NextID()
 	}
 
 	if err = g.Check(); err != nil {

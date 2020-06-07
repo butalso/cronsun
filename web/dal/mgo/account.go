@@ -69,38 +69,38 @@ func (s UserStatus) Defined() bool {
 }
 
 func GetAccounts(query bson.M) (list []Account, err error) {
-	err = db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Find(query).All(&list)
 	})
 	return
 }
 
 func GetAccountByEmail(email string) (u *Account, err error) {
-	err = db.GetDb().FindOne(Coll_Account, bson.M{"email": email}, &u)
+	err = db.GetDB().FindOne(Coll_Account, bson.M{"email": email}, &u)
 	return
 }
 
 func CreateAccount(u *Account) error {
 	u.ID = bson.NewObjectId()
 	u.CreateTime = time.Now()
-	return db.GetDb().Insert(Coll_Account, u)
+	return db.GetDB().Insert(Coll_Account, u)
 
 }
 
 func UpdateAccount(query bson.M, change bson.M) error {
-	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDB().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Update(query, bson.M{"$set": change})
 	})
 }
 
 func BanAccount(email string) error {
-	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDB().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.Update(bson.M{"email": email}, bson.M{"$set": bson.M{"status": UserBanned}})
 	})
 }
 
 func EnsureAccountIndex() error {
-	return db.GetDb().WithC(Coll_Account, func(c *mgo.Collection) error {
+	return db.GetDB().WithC(Coll_Account, func(c *mgo.Collection) error {
 		return c.EnsureIndex(mgo.Index{
 			Key:    []string{"email"},
 			Unique: true,

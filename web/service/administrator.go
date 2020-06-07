@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/butalso/cronsun/common/db"
 	"github.com/butalso/cronsun/web/dal/mgo"
 	"net/http"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/butalso/cronsun/common/log"
 	"gopkg.in/mgo.v2/bson"
+	mgo2 "gopkg.in/mgo.v2"
 )
 
 type Administrator struct{}
@@ -67,7 +67,7 @@ func (this *Administrator) GetAccount(ctx *Context) {
 
 	u, err := mgo.GetAccountByEmail(email)
 	if err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, fmt.Sprintf("Email [%s] not found.", email))
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())
@@ -179,7 +179,7 @@ func (this *Administrator) UpdateAccount(ctx *Context) {
 
 	originAccount, err := mgo.GetAccountByEmail(account.OriginEmail)
 	if err != nil {
-		if err == db.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			outJSONWithCode(ctx.W, http.StatusNotFound, "Email not found.")
 		} else {
 			outJSONWithCode(ctx.W, http.StatusInternalServerError, err.Error())

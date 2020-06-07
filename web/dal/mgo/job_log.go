@@ -7,7 +7,6 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/butalso/cronsun/common/conf"
 	"github.com/butalso/cronsun/common/log"
 )
 
@@ -35,20 +34,36 @@ type JobLog struct {
 	Cleanup   time.Time     `bson:"cleanup,omitempty" json:"-"`       // 日志清除时间标志
 }
 
+func EnsureJobLogIndex() {
+	db.GetDB().WithC(Coll_JobLog, func(c *mgo.Collection) error {
+		c.EnsureIndex(mgo.Index{
+			Key: []string{"beginTime"},
+		})
+		c.EnsureIndex(mgo.Index{
+			Key: []string{"hostname"},
+		})
+		c.EnsureIndex(mgo.Index{
+			Key: []string{"ip"},
+		})
+
+		return nil
+	})
+}
+
 type JobLatestLog struct {
 	JobLog   `bson:",inline"`
 	RefLogId string `bson:"refLogId,omitempty" json:"refLogId"`
 }
 
 func GetJobLogById(id bson.ObjectId) (l *JobLog, err error) {
-	err = db.GetDb().FindId(Coll_JobLog, id, &l)
+	err = db.GetDB().FindId(Coll_JobLog, id, &l)
 	return
 }
 
 var selectForJobLogList = bson.M{"command": 0, "output": 0}
 
 func GetJobLogList(query bson.M, page, size int, sort string) (list []*JobLog, total int, err error) {
-	err = db.GetDb().WithC(Coll_JobLog, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_JobLog, func(c *mgo.Collection) error {
 		total, err = c.Find(query).Count()
 		if err != nil {
 			return err
@@ -59,7 +74,7 @@ func GetJobLogList(query bson.M, page, size int, sort string) (list []*JobLog, t
 }
 
 func GetJobLatestLogList(query bson.M, page, size int, sort string) (list []*JobLatestLog, total int, err error) {
-	err = db.GetDb().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
 		total, err = c.Find(query).Count()
 		if err != nil {
 			return err
@@ -72,7 +87,7 @@ func GetJobLatestLogList(query bson.M, page, size int, sort string) (list []*Job
 func GetJobLatestLogListByJobIds(jobIds []string) (m map[string]*JobLatestLog, err error) {
 	var list []*JobLatestLog
 
-	err = db.GetDb().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_JobLatestLog, func(c *mgo.Collection) error {
 		return c.Find(bson.M{"jobId": bson.M{"$in": jobIds}}).Select(selectForJobLogList).Sort("beginTime").All(&list)
 	})
 	if err != nil {
@@ -86,70 +101,6 @@ func GetJobLatestLogListByJobIds(jobIds []string) (m map[string]*JobLatestLog, e
 	return
 }
 
-func CreateJobLog(j *node.Job, t time.Time, rs string, success bool) {
-	et := time.Now()
-	j.Avg(t, et)
-
-	jl := JobLog{
-		Id:    bson.NewObjectId(),
-		JobId: j.ID,
-
-		JobGroup: j.Group,
-		Name:     j.Name,
-		User:     j.User,
-
-		Node:     j.RunOn,
-		Hostname: j.Hostname,
-		IP:       j.Ip,
-
-		Command: j.Command,
-		Output:  rs,
-		Success: success,
-
-		BeginTime: t,
-		EndTime:   et,
-	}
-
-	if conf.Config.Web.LogCleaner.EveryMinute > 0 {
-		var expiration int
-		if j.LogExpiration > 0 {
-			expiration = j.LogExpiration
-		} else {
-			expiration = conf.Config.Web.LogCleaner.ExpirationDays
-		}
-		jl.Cleanup = jl.EndTime.Add(time.Duration(expiration) * time.Hour * 24)
-	}
-
-	if err := db.GetDb().Insert(Coll_JobLog, jl); err != nil {
-		log.Errorf(err.Error())
-	}
-
-	latestLog := &JobLatestLog{
-		RefLogId: jl.Id.Hex(),
-		JobLog:   jl,
-	}
-	latestLog.Id = ""
-	if err := db.GetDb().Upsert(Coll_JobLatestLog, bson.M{"node": jl.Node, "hostname": jl.Hostname, "ip": jl.IP, "jobId": jl.JobId, "jobGroup": jl.JobGroup}, latestLog); err != nil {
-		log.Errorf(err.Error())
-	}
-
-	var inc = bson.M{"total": 1}
-	if jl.Success {
-		inc["successed"] = 1
-	} else {
-		inc["failed"] = 1
-	}
-
-	err := db.GetDb().Upsert(Coll_Stat, bson.M{"name": "job-day", "date": time.Now().Format("2006-01-02")}, bson.M{"$inc": inc})
-	if err != nil {
-		log.Errorf("increase stat.job %s", err.Error())
-	}
-	err = db.GetDb().Upsert(Coll_Stat, bson.M{"name": "job"}, bson.M{"$inc": inc})
-	if err != nil {
-		log.Errorf("increase stat.job %s", err.Error())
-	}
-}
-
 type StatExecuted struct {
 	Total     int64  `bson:"total" json:"total"`
 	Successed int64  `bson:"successed" json:"successed"`
@@ -158,13 +109,13 @@ type StatExecuted struct {
 }
 
 func JobLogStat() (s *StatExecuted, err error) {
-	err = db.GetDb().FindOne(Coll_Stat, bson.M{"name": "job"}, &s)
+	err = db.GetDB().FindOne(Coll_Stat, bson.M{"name": "job"}, &s)
 	return
 }
 
 func JobLogDailyStat(begin, end time.Time) (ls []*StatExecuted, err error) {
 	const oneDay = time.Hour * 24
-	err = db.GetDb().WithC(Coll_Stat, func(c *mgo.Collection) error {
+	err = db.GetDB().WithC(Coll_Stat, func(c *mgo.Collection) error {
 		dateList := make([]string, 0, 8)
 
 		cur := begin
@@ -179,4 +130,27 @@ func JobLogDailyStat(begin, end time.Time) (ls []*StatExecuted, err error) {
 	})
 
 	return
+}
+
+func CleanupLogs(expiration time.Duration) {
+	err := db.GetDB().WithC(Coll_JobLog, func(c *mgo.Collection) error {
+		_, err := c.RemoveAll(bson.M{"$or": []bson.M{
+			bson.M{"$and": []bson.M{
+				bson.M{"cleanup": bson.M{"$exists": true}},
+				bson.M{"cleanup": bson.M{"$lte": time.Now()}},
+			}},
+			bson.M{"$and": []bson.M{
+				bson.M{"cleanup": bson.M{"$exists": false}},
+				bson.M{"endTime": bson.M{"$lte": time.Now().Add(-expiration)}},
+			}},
+		}})
+
+		return err
+	})
+
+	if err != nil {
+		log.Errorf("[Cleaner] Failed to remove expired logs: %s", err.Error())
+		return
+	}
+
 }

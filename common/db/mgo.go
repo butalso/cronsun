@@ -14,11 +14,19 @@ type Mdb struct {
 	*mgo.Session
 }
 
-func NewMdb(c *conf.MgoConfig) (*Mdb, error) {
-	m := &Mdb{
+var (
+	mgoDB *Mdb
+)
+
+func GetDB() *Mdb {
+	return mgoDB
+}
+
+func InitMgo(c *conf.MgoConfig) error {
+	mgoDB = &Mdb{
 		MgoConfig: c,
 	}
-	return m, m.connect()
+	return mgoDB.connect()
 }
 
 func (m *Mdb) connect() error {

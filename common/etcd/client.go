@@ -23,18 +23,18 @@ type Client struct {
 	reqTimeout time.Duration
 }
 
-func NewClient(cfg *conf.Conf) (c *Client, err error) {
+func InitEtcdClient(cfg *conf.Conf) error {
 	cli, err := client.New(cfg.Etcd.Copy())
 	if err != nil {
-		return
+		return err
 	}
 
-	c = &Client{
+	DefalutClient = &Client{
 		Client: cli,
 
 		reqTimeout: time.Duration(cfg.ReqTimeout) * time.Second,
 	}
-	return
+	return nil
 }
 
 func (c *Client) Put(key, val string, opts ...client.OpOption) (*client.PutResponse, error) {

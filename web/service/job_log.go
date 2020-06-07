@@ -1,9 +1,7 @@
 package service
 
 import (
-	"github.com/butalso/cronsun/common/db"
 	"github.com/butalso/cronsun/web/dal/mgo"
-	"gopkg.in/mgo.v2"
 	"math"
 	"net/http"
 	"strings"
@@ -11,23 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
+	mgo2 "gopkg.in/mgo.v2"
 )
-
-func EnsureJobLogIndex() {
-	db.GetDb().WithC(mgo.Coll_JobLog, func(c *mgo.Collection) error {
-		c.EnsureIndex(mgo.Index{
-			Key: []string{"beginTime"},
-		})
-		c.EnsureIndex(mgo.Index{
-			Key: []string{"hostname"},
-		})
-		c.EnsureIndex(mgo.Index{
-			Key: []string{"ip"},
-		})
-
-		return nil
-	})
-}
 
 type JobLog struct{}
 
@@ -47,7 +30,7 @@ func (jl *JobLog) GetDetail(ctx *Context) {
 	logDetail, err := mgo.GetJobLogById(bson.ObjectIdHex(id))
 	if err != nil {
 		statusCode := http.StatusInternalServerError
-		if err == mgo.ErrNotFound {
+		if err == mgo2.ErrNotFound {
 			statusCode = http.StatusNotFound
 			err = nil
 		}
